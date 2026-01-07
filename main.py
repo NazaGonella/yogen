@@ -15,11 +15,12 @@ class WatchDogHandler(FileSystemEventHandler):
         mod_file_path : Path = Path(event.src_path)
         if mod_file_path.suffix == ".md":
             output : str = parse_markdown(mod_file_path)
-
-            output_path : Path = mod_file_path.parent / "index.html"
+            rel_path : Path = mod_file_path.relative_to(content_path)
+            output_path : Path = Path("build") / rel_path.parent / "index.html"
+            output_path.parent.mkdir(parents=True, exist_ok=True)
             output_path.write_text(output, encoding="utf-8")
 
-def build(src:Path):
+def build(src : Path):
     # delete pre-existing build folder
     if build_path.exists() and build_path.is_dir():
         shutil.rmtree(build_path)
