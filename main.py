@@ -1,5 +1,3 @@
-import time
-import markdown
 import shutil
 
 from pathlib import Path
@@ -47,7 +45,7 @@ def main():
     build(content_path)
 
     handler = lambda *a, **kw: SimpleHTTPRequestHandler(
-        *a, directory="build", **kw
+        *a, directory=str(build_path), **kw
     )
 
     HTTPServer(("127.0.0.1", 8000), handler).serve_forever()
