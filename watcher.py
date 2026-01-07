@@ -1,5 +1,4 @@
 from pathlib import Path
-from parser import ParseMarkdown
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from structure import Site
 from structure import Page

@@ -1,27 +1,18 @@
 ---
-title: Nuevo Titulo 1231
-date: titulo
+title: Ultimo 2
+date: 07/01/26
 content: titulo
 tags: math
-tags: games
-tags: bowling2
 section: posts
-template: "hola"
+template: template
 ---
 
 
-{{title}}
-
-ahowdiaowdj
-
-
-awdpawdkpowkop
-+
-ooo
-
-adwawdgonrgoiogiogiojgtjiogtoutpui
+{{page.title}}
 
 
 ## Title
 
 ### sub
+
+Hola como va

@@ -4,11 +4,12 @@ from pathlib import Path
 from datetime import date
 
 class Page:
-    def __init__(self, md_file : Path):
+    def __init__(self, site : "Site", md_file : Path):
+        self.site : "Site" = site
         self.parse_fields(md_file)
 
     def parse_fields(self, md_file : Path):
-        parse : ParseMarkdown = ParseMarkdown(md_file)
+        parse : ParseMarkdown = ParseMarkdown(self.site.templates_path, md_file)
         fields = {
             "title"     : parse.meta.get("title", md_file.stem),
             "date"      : parse.meta.get("date", date.today()),
@@ -58,7 +59,7 @@ class Site:
             elif item.suffix == ".md":
                 target.parent.mkdir(parents=True, exist_ok=True)
 
-                page : Page = Page(item)
+                page : Page = Page(self, item)
                 self.pages[item] = page
 
                 output_path : Path = target.parent / "index.html"
