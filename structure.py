@@ -1,5 +1,5 @@
 import shutil
-from parser import parse_markdown
+from parser import ParseMarkdown
 from pathlib import Path
 
 class Site:
@@ -20,11 +20,12 @@ class Site:
                 target.mkdir(parents=True, exist_ok=True)
             elif item.suffix == ".md":
                 target.parent.mkdir(parents=True, exist_ok=True)
-                output : str = parse_markdown(item)
+                # output : str = parse_markdown(item)
+                output : str = ParseMarkdown(item).content_html
                 output_path : Path = target.parent / "index.html"
                 output_path.write_text(output, encoding="utf-8")
 
-    def deploy_path():
+    def deploy_path(self):
         pass
 
 class Page:

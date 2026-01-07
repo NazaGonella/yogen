@@ -1,3 +1,9 @@
+---
+title: hola
+section: posts
+tags: ["math", "python"]
+---
+
 hello
 
 ahowdiaowdj
@@ -11,3 +17,5 @@ adwawdgonrgoiogiogiojgtjiogtoutpui
 
 
 ## Title
+
+### sub

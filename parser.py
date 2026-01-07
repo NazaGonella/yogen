@@ -2,25 +2,18 @@ import markdown
 import re
 from pathlib import Path
 
-def parse_markdown(md_file : Path) -> str:
-    md : markdown.Markdown = markdown.Markdown(extensions=["meta"])
+class ParseMarkdown:
+    def __init__(self, md_file : Path):
+        md : markdown.Markdown = markdown.Markdown(extensions=["meta"])
+        content_md : str = md_file.read_text(encoding="utf-8")
+        content_html : str = md.convert(content_md)
+        print(md.Meta)
 
-    content_md : str = md_file.read_text(encoding="utf-8")
-    content_html : str = md.convert(content_md)
-
-    # template : str = (Path("templates") / Path("template.html")).read_text(encoding="utf-8")
-
-    # output : str = template.replace("$body$", content_html)
-
-    # symbols : set[str] = set(re.findall(r'\$(.*?)\$', output))      # all symbols that are between $
-    # for sym in symbols:
-    #     if sym in md.Meta:
-    #         output = output.replace(f"${sym}$", md.Meta[sym][0])
-
-    return content_html
+        self.content_md : str = content_md
+        self.content_html : str = content_html
 
 def apply_template(template : str):
     pass
 
-def get_symbols(html_file : Path):
+def get_symbols(content_html : Path):
     pass
