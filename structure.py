@@ -11,16 +11,25 @@ class Page:
 
     def parse_fields(self, md_file : Path):
         parse : ParseMarkdown = ParseMarkdown(md_file)
+
+        content     = parse.content_html                                            # html content, cannot be set by the user
+        title       = parse.meta.get("title", [md_file.parent.stem])[0]             # defaults to parent folder name
+        _date        = parse.meta.get("date", [date.today()])[0]                    # defaults to date of creation
+        template    = parse.meta.get("template", [""])[0]                           # template file name (not full path), defaults to nothing
+        section     = parse.meta.get("section", [md_file.parent.parent.stem])[0]    # defaults to parent's parent folder
+        tags        = parse.meta.get("tags", [])                                    # unique list field
+
         fields = {
-            "title"     : parse.meta.get("title", md_file.stem),
-            "date"      : parse.meta.get("date", date.today()),
-            "content"   : parse.content_html,
+            "content"   : content,
+            "title"     : title,
+            "date"      : _date,
+            "template"  : template,
+            "section"   : section,
+            "tags"      : tags,
             # "summary"   : parse.,
             # "url"       : parse.meta.get("url", ""),
-            "tags"       : parse.meta.get("tags", []),
-            "section"   : parse.meta.get("section", md_file.parent.parent.stem),
-            "template" : parse.meta.get("template", "")
         }
+
         self.__fields = fields
 
     
@@ -92,8 +101,6 @@ class Site:
 
                 template_path = self.templates_path / f"{page.get_field("template")[0]}.html"
                 template_content = template_path.read_text(encoding="utf-8") if template_path.exists() else ""
-
-                print(template_path)
 
                 output_path : Path = target.parent / "index.html"
                 output_path.write_text(page.render(template_content), encoding="utf-8")
