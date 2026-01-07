@@ -1,7 +1,9 @@
 ---
-title: hola
-section: posts
-tags: ["math", "python"]
+title: "titulo"
+date: "titulo"
+content: "titulo"
+tags: "titulo"
+section: "titulo"
 ---
 
 hello
