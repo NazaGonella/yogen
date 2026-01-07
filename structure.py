@@ -19,6 +19,12 @@ class Page:
         section     = parse.meta.get("section", [md_file.parent.parent.stem])[0]    # defaults to parent's parent folder
         tags        = parse.meta.get("tags", [])                                    # unique list field
 
+        # print(title)
+        # print(_date)
+        # print(template)
+        # print(section)
+        # print(tags)
+
         fields = {
             "content"   : content,
             "title"     : title,
@@ -66,7 +72,7 @@ class Page:
             if token.startswith("page."):
                 token = token[len("page."):]
                 if self.has_field(token):
-                    content = content.replace(matches_with_braces[i], self.get_field(token)[0])
+                    content = content.replace(matches_with_braces[i], self.get_field(token))
         
         return content
 
@@ -99,7 +105,7 @@ class Site:
                 page : Page = Page(self, item)
                 self.pages[item] = page
 
-                template_path = self.templates_path / f"{page.get_field("template")[0]}.html"
+                template_path = self.templates_path / f"{page.get_field("template")}.html"
                 template_content = template_path.read_text(encoding="utf-8") if template_path.exists() else ""
 
                 output_path : Path = target.parent / "index.html"
@@ -116,9 +122,7 @@ class Site:
                 for tag in page.get_field("tags"):
                     self.tags.setdefault(tag, []).append(page)
             if page.has_field("section"):
-                section_meta = page.get_field("section")
-                assert len(section_meta) == 1, f"section should only have one value. section_meta={section_meta}."
-                self.sections.setdefault(section_meta[0], []).append(page)
+                self.sections.setdefault(page.get_field("section"), []).append(page)
         # print("\nUPDATE ALL PAGES")
         # print("sections:", self.sections)
         # print("tags:", self.tags)
@@ -136,9 +140,7 @@ class Site:
                 self.tags.setdefault(tag, []).append(page)
 
         if page.has_field("section"):
-            section_meta = page.get_field("section")
-            assert len(section_meta) == 1
-            self.sections.setdefault(section_meta[0], []).append(page)
+            self.sections.setdefault(page.get_field("section"), []).append(page)
 
         # print("\nUPDATE FOR PAGE")
         # print("sections:", self.sections)

@@ -7,7 +7,12 @@ template: template
 section: posts
 ---
 
+this is a date --> {{page.date     }} <--
+
+this is a section --> {{page.section     }} <--
+
 {{page.title}}
+
 aowijdaowijd
 
 
