@@ -1,2 +1,6 @@
 - Validate front matter fields
 - Front matter fields as lists
+- Template live update
+- Template front matter fields
+- Markdown extensions
+- Front matter fields can take parameters

@@ -4,6 +4,13 @@ from parser import ParseMarkdown
 from pathlib import Path
 from datetime import date
 
+def summarize(text: str, limit: int = 30) -> str:
+    words = text.split()
+    if len(words) <= limit:
+        return " ".join(words) + "."
+    else:
+        return " ".join(words[:limit]) + "..."
+
 class Page:
     def __init__(self, site : "Site", md_file : Path):
         self.site : "Site" = site
@@ -14,19 +21,22 @@ class Page:
 
         content     = parse.content_html                                            # html content, cannot be set by the user
         title       = parse.meta.get("title", [md_file.parent.stem])[0]             # defaults to parent folder name
-        _date        = parse.meta.get("date", [date.today()])[0]                    # defaults to date of creation
+        author      = parse.meta.get("author", [""])[0]                             # defaults to config field
+        _date       = parse.meta.get("date", [date.today()])[0]                     # defaults to date of creation
         template    = parse.meta.get("template", [""])[0]                           # template file name (not full path), defaults to nothing
         section     = parse.meta.get("section", [md_file.parent.parent.stem])[0]    # defaults to parent's parent folder
+        summary     = summarize(parse.content_html)                                 # defaults to 30 words
         tags        = parse.meta.get("tags", [])                                    # unique list field
 
         fields = {
             "content"   : content,
             "title"     : title,
+            "author"    : author,
             "date"      : _date,
             "template"  : template,
             "section"   : section,
+            "summary"   : summary,
             "tags"      : tags,
-            # "summary"   : parse.,
             # "url"       : parse.meta.get("url", ""),
         }
 
@@ -44,9 +54,49 @@ class Page:
     def has_field(self, key : str) -> bool:
         return key in self.__fields
     
+    def parse_custom_template(self, text: str):
+        blocks = {"sections": {}, "tags": {}}
+        lines = text.splitlines()
+        stack = []
+
+        current_type = None   # "sections" or "tags"
+        current_name = None   # the part after the dot
+        buffer = []
+
+        for line in lines:
+            line = line.rstrip()
+            # block start
+            m = re.match(r"@factory\s+((sections|tags)\.([a-zA-Z0-9_]+))", line.strip())
+            if m:
+                if current_type:
+                    stack.append((current_type, current_name, buffer))
+                current_type = m.group(2)      # "sections" or "tags"
+                current_name = m.group(3)      # whatever comes after the dot
+                buffer = []
+                continue
+            # block end
+            if line.strip() == "@":
+                if current_type and current_name:
+                    blocks[current_type][current_name] = "\n".join(buffer)
+                if stack:
+                    current_type, current_name, buffer = stack.pop()
+                else:
+                    current_type = None
+                    current_name = None
+                    buffer = []
+                continue
+            # inside block
+            if current_type:
+                buffer.append(line)
+
+        return blocks
+
+    
     def render(self, template_content : str) -> str:
         pre_content : str = self.get_field("content")
-        content = pre_content
+
+        # apply template
+        content :str = pre_content
         if template_content:
             matches_with_braces = re.findall(r"(\{\{.*?\}\})", template_content)
             matches = re.findall(r"\{\{(.*?)\}\}", template_content)
@@ -57,7 +107,13 @@ class Page:
                     token = token[len("page."):]
                     if token == "content":
                         content = template_content.replace(matches_with_braces[i], pre_content)
+        
+        # unroll factory
+        factory = self.parse_custom_template(content)
+        print(factory)
 
+
+        # replace placeholders
         matches_with_braces = re.findall(r"(\{\{.*?\}\})", content)
         matches = re.findall(r"\{\{(.*?)\}\}", content)
         for i in range(len(matches)):
@@ -67,6 +123,8 @@ class Page:
                 token = token[len("page."):]
                 if self.has_field(token):
                     content = content.replace(matches_with_braces[i], str(self.get_field(token)))
+            # # TODO
+            # if token.startswith("tag."):
         
         return content
 

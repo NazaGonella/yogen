@@ -25,8 +25,21 @@
 
   <main>
     <article>
+      @factory sections.posts
+          <div class="posts">
+          <p>{{page.date}} <a href="{{page.url}}">{{page.title}}</a></p>
+          </div>
+      @
+
+      @factory tags.posts
+          <div class="posts">
+          <p>{{page.date}} <a href="{{page.url}}">{{page.title}}</a></p>
+          </div>
+      @
       <hr>
       <h2>{{page.title}}</h2>
+      By {{page.author}}
+      {{page.summary}}
       <p><em>{{page.date}}</em></p>
       {{page.content}}
     </article>

@@ -1,5 +1,6 @@
 ---
-title: Ultimo 2
+title: Decoding UTFs
+author: Naza Gonella
 date: 07/01/26
 content: titulo
 tags: math
@@ -7,27 +8,8 @@ template: template
 section: posts
 ---
 
-this is a date --> {{page.date     }} <--
-
-this is a section --> {{page.section     }} <--
-
-{{page.title}}
+---
 
 
-page.date
 
-{{page.section}}
-
-aowijdaowijd
-
-
-- awda
-- dawda
-- awdawd
-
-
-## Title
-
-### sub
-
-Hola como va
+---
