@@ -1,12 +1,14 @@
 import shutil
 from pathlib import Path
-from src.structure.page import Page
+from src.page import Page
 
 class Site:
-    def __init__(self, content_path : str, build_path : str, deploy_path : str, templates_path : str):
+    def __init__(self, content_path : str, build_path : str, deploy_path : str, scripts_path : str, styles_path : str, templates_path : str):
         self.content_path : Path = Path(content_path)
         self.build_path : Path = Path(build_path)
         self.deploy_path : Path = Path(deploy_path)
+        self.scripts_path : Path = Path(scripts_path)
+        self.styles_path : Path = Path(styles_path)
         self.templates_path : Path = Path(templates_path)
         self.pages : dict[Path, Page] = {}
         self.sections = {}
@@ -16,6 +18,21 @@ class Site:
         # delete pre-existing build folder
         if self.build_path.exists() and self.build_path.is_dir():
             shutil.rmtree(self.build_path)
+        
+        self.build_path.mkdir(parents=True, exist_ok=True)
+        (self.build_path / "scripts").mkdir(parents=True, exist_ok=True)
+        (self.build_path / "styles").mkdir(parents=True, exist_ok=True)
+
+        # css files
+        for css_file in self.styles_path.rglob("*.css"):
+            target = self.build_path / css_file.name
+            shutil.copy2(css_file, target)
+
+        # js files
+        for js_file in self.scripts_path.rglob("*.js"):
+            target = self.build_path / js_file.name
+            shutil.copy2(js_file, target)
+
         
         self.pages.clear()
         self.sections.clear()
@@ -36,12 +53,10 @@ class Site:
 
                 output_path : Path = target.parent / "index.html"
                 output_path.write_text(page.render(template_content), encoding="utf-8")
-            elif item.suffix == ".css":
-                # target.parent.mkdir(parents=True, exist_ok=True)
+            else:
+                target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(item, target)
-            elif item.suffix == ".js":
-                # target.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(item, target)
+
         
         self.update_page_indices()
     

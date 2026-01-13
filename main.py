@@ -2,9 +2,9 @@ from src.watcher import WatchDogHandler
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from watchdog.observers import Observer
 
-from src.structure.site import Site
+from src.site import Site
 
-site : Site = Site(build_path="build", content_path="content", deploy_path="deploy", templates_path="templates")
+site : Site = Site(content_path="content", build_path="build", deploy_path="deploy", scripts_path="scripts", styles_path="styles", templates_path="templates")
 site.build()
 
 def main():
