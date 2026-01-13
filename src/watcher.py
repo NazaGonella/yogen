@@ -1,7 +1,7 @@
 from pathlib import Path
 from watchdog.events import FileSystemEvent, FileSystemEventHandler
-from structure import Site
-from structure import Page
+from src.structure.site import Site
+from src.structure.page import Page
 
 class WatchDogHandler(FileSystemEventHandler):
     def __init__(self, site : Site):

@@ -1,0 +1,12 @@
+{
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.venv": true,
+    "**/.vscode": true
+  },
+  "search.exclude": {
+    "**/__pycache__": true,
+    "**/.venv": true,
+    "**/.vscode": true
+  }
+}

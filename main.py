@@ -1,12 +1,11 @@
-from watcher import WatchDogHandler
+from src.watcher import WatchDogHandler
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from watchdog.observers import Observer
 
-from structure import Site
+from src.structure.site import Site
 
 site : Site = Site(build_path="build", content_path="content", deploy_path="deploy", templates_path="templates")
 site.build()
-
 
 def main():
     event_handler : WatchDogHandler = WatchDogHandler(site)
@@ -19,7 +18,5 @@ def main():
     )
 
     HTTPServer(("127.0.0.1", 8000), http_handler).serve_forever()
-
-
 
 main()
