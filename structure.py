@@ -54,44 +54,7 @@ class Page:
     def has_field(self, key : str) -> bool:
         return key in self.__fields
     
-    def parse_custom_template(self, text: str):
-        blocks = {"sections": {}, "tags": {}}
-        lines = text.splitlines()
-        stack = []
 
-        current_type = None   # "sections" or "tags"
-        current_name = None   # the part after the dot
-        buffer = []
-
-        for line in lines:
-            line = line.rstrip()
-            # block start
-            m = re.match(r"@factory\s+((sections|tags)\.([a-zA-Z0-9_]+))", line.strip())
-            if m:
-                if current_type:
-                    stack.append((current_type, current_name, buffer))
-                current_type = m.group(2)      # "sections" or "tags"
-                current_name = m.group(3)      # whatever comes after the dot
-                buffer = []
-                continue
-            # block end
-            if line.strip() == "@":
-                if current_type and current_name:
-                    blocks[current_type][current_name] = "\n".join(buffer)
-                if stack:
-                    current_type, current_name, buffer = stack.pop()
-                else:
-                    current_type = None
-                    current_name = None
-                    buffer = []
-                continue
-            # inside block
-            if current_type:
-                buffer.append(line)
-
-        return blocks
-
-    
     def render(self, template_content : str) -> str:
         pre_content : str = self.get_field("content")
 
@@ -108,10 +71,6 @@ class Page:
                     if token == "content":
                         content = template_content.replace(matches_with_braces[i], pre_content)
         
-        # unroll factory
-        factory = self.parse_custom_template(content)
-        print(factory)
-
 
         # replace placeholders
         matches_with_braces = re.findall(r"(\{\{.*?\}\})", content)
