@@ -1,13 +1,16 @@
 ---
-title: Nazareno Gonella
-author: Nazareno Gonella
+title: About
+author: Your Name
+date: 11/11/11
+tags: about
+section: about
 template: template-home
 ---
 
 <div style="margin-top:2em;"></div>
 
 <center>
-Hello, I'm Nazareno Gonella, an AI engineering student. Here I share code, projects, and topics I'm currently learning about.
+Hello, this is your about page.
 </center>
 
 <div style="margin-bottom:2em;"></div>
@@ -15,12 +18,12 @@ Hello, I'm Nazareno Gonella, an AI engineering student. Here I share code, proje
 ---
 
 **Email**
-: [nazagonella2@gmail.com](mailto:nazagonella2@gmail.com)
+: [youremail@example.com](/about/)
 
 **GitHub**  
-: [github.com/NazaGonella](https://github.com/NazaGonella)
+: [github.com/example](/about/)
 
 **LinkedIn**  
-: [linkedin.com/in/nazareno-gonella](https://www.linkedin.com/in/nazareno-gonella/)
+: [linkedin.com/in/example](/about/)
 
 ---

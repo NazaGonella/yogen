@@ -15,3 +15,10 @@ src/yogen.egg-info/dependency_links.txt
 src/yogen.egg-info/entry_points.txt
 src/yogen.egg-info/requires.txt
 src/yogen.egg-info/top_level.txt
+src/yogen/defaults/rss-config.json
+src/yogen/defaults/content/home.md
+src/yogen/defaults/content/about/index.md
+src/yogen/defaults/content/posts/example-post/index.md
+src/yogen/defaults/styles/style.css
+src/yogen/defaults/templates/template-home.html
+src/yogen/defaults/templates/template-post.html
