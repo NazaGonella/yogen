@@ -1,5 +1,3 @@
-# Example Package
+### Work in progress
 
-This is a simple example package. You can use
-[GitHub-flavored Markdown](https://guides.github.com/features/mastering-markdown/)
-to write your content.
+Minimal static site generator with a fast and easy setup.
