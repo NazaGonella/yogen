@@ -29,6 +29,7 @@ def make_site(root: Path) -> Site:
         build_path=root / "build",
         deploy_path=root / "deploy",
         scripts_path=root / "scripts",
+        assets_path=root / "assets",
         styles_path=root / "styles",
         templates_path=root / "templates",
         rss_config_path=root / "rss-config.json"

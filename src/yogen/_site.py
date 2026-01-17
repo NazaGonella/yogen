@@ -4,10 +4,11 @@ from .page import Page
 from .rss import MarkdownRSS
 
 class Site:
-    def __init__(self, content_path : str, build_path : str, deploy_path : str, scripts_path : str, styles_path : str, templates_path : str, rss_config_path : str):
+    def __init__(self, content_path : str, build_path : str, deploy_path : str, scripts_path : str, assets_path : str, styles_path : str, templates_path : str, rss_config_path : str):
         self.content_path : Path = Path(content_path)
         self.build_path : Path = Path(build_path)
         self.deploy_path : Path = Path(deploy_path)
+        self.assets_path : Path = Path(assets_path)
         self.scripts_path : Path = Path(scripts_path)
         self.styles_path : Path = Path(styles_path)
         self.templates_path : Path = Path(templates_path)
@@ -29,9 +30,14 @@ class Site:
             shutil.copy2(css_file, target)
 
         # js files
-        for js_file in self.scripts_path.rglob("*.js"):
-            target = self.build_path / js_file.name
-            shutil.copy2(js_file, target)
+        for asset in self.scripts_path.rglob("*.js"):
+            target = self.build_path / asset.name
+            shutil.copy2(asset, target)
+        
+        # assets files
+        for asset in self.assets_path.rglob("*"):
+            target = self.build_path / asset.name
+            shutil.copy2(asset, target)
 
         
         self.pages.clear()
