@@ -1,0 +1,36 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtual environment
+.venv/
+venv/
+env/
+ENV/
+.venv/**
+
+# Editor/IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Site generator build output
+build/
+dist/
+
+# Backup/temp files
+*~
+*.swp
+*.tmp
+
+# tmp folder
+tmp/*
