@@ -1,4 +1,5 @@
 import shutil
+import subprocess
 from pathlib import Path
 from .page import Page
 from .rss import MarkdownRSS
@@ -164,3 +165,11 @@ class Site:
             else:
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(item, target)
+        
+
+        # push deploy to gh-pages branch as root
+        
+        subprocess.run(
+            ["git", "subtree", "push", "--prefix", str(deploy_path), "origin", "gh-pages"],
+            check=True,
+        )
