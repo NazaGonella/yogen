@@ -15,7 +15,6 @@ name = "author 1 name"
 email = "author 1 email address"
 
 [feed]
-enabled = true
 title = "Your Feed Title"
 subtitle = "Your Feed Subtitle"
 icon = "icon.svg"
