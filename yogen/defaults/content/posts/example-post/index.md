@@ -1,12 +1,11 @@
----
-title: Example Post
-author: Your Name
-date: 11/11/11
-tags: some tag
-tags: another tag
-section: posts
-template: template-post
----
++++
+title = "Example Post"
+author = "Your Name"
+date = "2011-11-11"
+tags = ["some tag", "another tag"]
+section = "posts"
+template = "template-post"
++++
 
 ---
 

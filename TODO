@@ -9,3 +9,10 @@
 - tests
 - handle more than one .md file in the same directory
 - handle git errors
+- chronological content
+- multiple languages
+- code syntax highlighting (pygments?)
+- Custom date formats
+- Parse page.date.B correctly
+- Update page meta on watch
+- config: make absolute paths work

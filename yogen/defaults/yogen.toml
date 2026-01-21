@@ -1,0 +1,23 @@
+[paths]
+static = "static/"
+content = "content/"
+templates = "templates/"
+build = "build/"
+
+[site]
+title = "Your Site Title"               # the default title for pages
+description = "Your site description"   # the default description for pages
+base_url = "https://example.com"
+languages = ["en"]
+
+[[site.authors]]
+name = "author 1 name"
+email = "author 1 email address"
+
+[feed]
+enabled = true
+entries_path = "path/to/entries/folder/"
+title = "Your Feed Title"
+subtitle = "Your Feed Subtitle"
+icon = "icon.svg"
+output = "example_feed.xml"

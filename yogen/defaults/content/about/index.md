@@ -1,11 +1,11 @@
----
-title: About
-author: Your Name
-date: 11/11/11
-tags: about
-section: about
-template: template-home
----
++++
+title = "About"
+author = "Your Name"
+date = "2011-11-11"
+tags = ["about"]
+section = "about"
+template = "template-home"
++++
 
 <div style="margin-top:2em;"></div>
 

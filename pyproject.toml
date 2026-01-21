@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "yogen"
-version = "0.1.0"
+version = "0.2.0"
 description = "Static site generator"
 authors = [{name = "Nazareno Gonella", email = "nazagonella2@gmail.com"}]
 readme = "README.md"
@@ -19,10 +19,10 @@ dependencies = [
 ]
 
 [project.scripts]
-yogen = "yogen.main:main"
+yogen = "yogen.__main__:main"
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["."]
 
 [tool.setuptools]
 include-package-data = true
