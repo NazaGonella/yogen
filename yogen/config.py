@@ -48,13 +48,17 @@ def load_config(root: Path):
     feed = config.get("feed")
     if not isinstance(feed, dict):
         raise KeyError("Missing or invalid [feed] section")
-    for key in ("enabled", "entries_path", "title", "subtitle", "icon", "output"):
+    for key in ("title", "subtitle", "icon", "output"):
         if key not in feed:
             raise KeyError(f"Missing feed.{key}")
-    if not isinstance(feed["enabled"], bool):
-        raise TypeError("feed.enabled must be a boolean")
-    for key in ("entries_path", "title", "subtitle", "icon", "output"):
         if not isinstance(feed[key], str):
             raise TypeError(f"feed.{key} must be a string")
+    feed.setdefault("sections", [])
+    feed.setdefault("tags", [])
+    if not isinstance(feed["sections"], list) or not all(isinstance(s, str) for s in feed["sections"]):
+        raise TypeError("feed.sections must be a list of strings")
+    if not isinstance(feed["tags"], list) or not all(isinstance(t, str) for t in feed["tags"]):
+        raise TypeError("feed.tags must be a list of strings")
+
 
     return config

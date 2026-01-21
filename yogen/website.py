@@ -1,6 +1,7 @@
 import shutil
 from yogen.config import load_config
 from yogen.page import Page
+from yogen.rss import MarkdownRSS
 from pathlib import Path
 
 class Site():
@@ -62,6 +63,29 @@ class Site():
             self.index_page(page)
     
 
+    def convert_feed(self):
+        feed_cfg = self.config.get("feed", {})
+        target_sections = set(feed_cfg.get("sections", []))
+        target_tags = set(feed_cfg.get("tags", []))
+
+        if not target_sections and not target_tags:
+            return
+
+        pages_for_feed = [
+            page for page in self.pages.values()
+            if (target_sections and self.page_sections.get(page) in target_sections)
+            or (target_tags and self.page_tags.get(page, set()) & target_tags)
+        ]
+
+        rss = MarkdownRSS(
+            pages=pages_for_feed,
+            output_file=str(self.build_path / feed_cfg["output"]),
+            config_file=self.config_file
+        )
+
+        rss.build()
+    
+
     def convert_page(self, file : Path, page : Page):
         target: Path = self.build_path / file.relative_to(self.content_path)
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -121,3 +145,4 @@ class Site():
         self.load_pages()
         self.convert_pages()
         self.copy_other_files()
+        self.convert_feed()

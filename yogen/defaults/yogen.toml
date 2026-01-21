@@ -16,8 +16,10 @@ email = "author 1 email address"
 
 [feed]
 enabled = true
-entries_path = "path/to/entries/folder/"
 title = "Your Feed Title"
 subtitle = "Your Feed Subtitle"
 icon = "icon.svg"
-output = "example_feed.xml"
+output = "feed.xml"
+# the RSS feed will include pages that fit at least one of the following criteria (sections or tags)
+sections = ["posts"]
+tags = []
