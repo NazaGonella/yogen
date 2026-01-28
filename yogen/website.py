@@ -79,49 +79,51 @@ class Site():
             or (target_tags and self.page_tags.get(page, set()) & target_tags)
         ]
 
-        print("pages:", [str(page.file) for page in pages_for_feed])
+        # print("pages:", [str(page.file) for page in pages_for_feed])
 
         output_path : Path = self.build_path / feed_cfg["output"]
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        print("output path:", output_path)
+        # print("output path:", output_path)
 
         fg = FeedGenerator()
 
         site_cfg = self.config["site"]
 
+        base_url = site_cfg["base_url"]
+        feed_link = f"{site_cfg["base_url"]}/{feed_cfg['output'].lstrip('/')}"
         fg.id(feed_cfg["output"])
         fg.title(feed_cfg["title"])
         fg.subtitle(feed_cfg["subtitle"])
-        fg.link(href=site_cfg["base_url"], rel="alternate")
-        # base = site_cfg["base_url"].rstrip("/")
-        # feed_url = f"{base}/{feed_cfg['output'].lstrip('/')}"
-        # fg.link(href=feed_url, rel="self")
-        # fg.language(site_cfg["languages"][0] if site_cfg["languages"] else "en")
+        fg.link(href=base_url, rel="alternate")
+        fg.link(href=feed_link, rel="self")
+        # print("link:", base_url)
+        # print("feed_link:", feed_link)
+        fg.language(site_cfg["languages"][0] if site_cfg["languages"] else "en")    # take first language, defaults to english
 
-        # for author in site_cfg["authors"]:
-        #     fg.author({"name": author["name"], "email": author["email"]})
+        for author in site_cfg["authors"]:
+            # print("author:", author["name"])
+            # print("email:", author["email"])
+            fg.author({"name": author["name"], "email": author["email"]})
 
-        # if feed_cfg.get("icon"):
-        #     fg.logo(feed_cfg["icon"])
+        if feed_cfg.get("icon"):
+            fg.logo(feed_cfg["icon"])
 
-        # for page in pages_for_feed:
-        #     entry = fg.add_entry()
-        #     rel = page.file.relative_to(self.content_path).with_suffix("")
-        #     if rel.name == "index":
-        #         rel = rel.parent
-        #     url = f"{site_cfg['base_url'].rstrip('/')}/{rel.as_posix()}/"
-        #     entry.id(url)
-        #     entry.link(href=url)
-        #     entry.title(str(page.get_field("title") or "Untitled"))
-        #     entry.content(page.get_field("content") or "", type="html")
-        #     page_date = page.get_field("date")
-        #     if isinstance(page_date, date) and not isinstance(page_date, datetime):
-        #         page_date = datetime(page_date.year, page_date.month, page_date.day, tzinfo=timezone.utc)
+        # print("\nPAGES\n")
+        for page in pages_for_feed:
+            page_path : Path = page.file.relative_to(self.content_path)
+            url : str = f"{base_url.rstrip("/")}/{str(page_path.parent)}/"
+            entry = fg.add_entry()
+            entry.id(url)
+            entry.link(href=url)
+            entry.title(str(page.get_field("title") or "Untitled"))
+            entry.content(page.render_raw() or "", type="html")
+            page_date = page.get_field("date")
+            if isinstance(page_date, date) and not isinstance(page_date, datetime):
+                page_date = datetime(page_date.year, page_date.month, page_date.day, tzinfo=timezone.utc)
+            entry.pubDate(page_date)
 
-        #     entry.pubDate(page_date)
-
-        # fg.rss_file(str(output_path))
+        fg.rss_file(str(output_path))
 
     def convert_page(self, file : Path, page : Page):
         target: Path = self.build_path / file.relative_to(self.content_path)

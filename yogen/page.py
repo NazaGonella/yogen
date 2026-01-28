@@ -9,7 +9,7 @@ from datetime import date, datetime
 class Page():
     def __init__(self, md_file : Path, config_file : Path, content_path : Path):
         self.config = load_config(config_file)
-        self.file = md_file
+        self.file : Path = md_file
         self.__fields = {
             "title" : self._define_title(md_file, content_path),
             "author" : "",
@@ -25,6 +25,8 @@ class Page():
                 self.__fields[k] = self._parse_date(v)
             elif k not in protected:
                 self.__fields[k] = v
+            else:
+                raise ValueError(f"metadata field '{k}' is protected and cannot be set")
     
     def __hash__(self):
         return hash(self.file)
@@ -53,41 +55,14 @@ class Page():
             # content = pattern.sub(pre_content, content)
             content = pattern.sub(lambda _: pre_content, content)
 
-        # find all placeholders
-        matches_with_braces = re.findall(r"(\{\{.*?\}\})", content)
-        matches = re.findall(r"\{\{(.*?)\}\}", content)
-
-        for i, m in enumerate(matches_with_braces):
-            token = matches[i].strip()
-            if not token.startswith("page."):
-                continue
-
-            expr = token[len("page."):]
-
-            try:
-                node = ast.parse(expr, mode="eval").body
-
-                # method call: page.method(args)
-                if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
-                    method_name = node.func.id
-                    args = [ast.literal_eval(a) for a in node.args]
-                    method = getattr(self, f"page_{method_name}", None)
-                    if callable(method):
-                        replacement = str(method(*args))
-                        content = content.replace(m, replacement)
-
-                # property access: page.field
-                elif isinstance(node, ast.Name):
-                    field_name = node.id
-                    if self.has_field(field_name):
-                        replacement = str(self.get_field(field_name))
-                        content = content.replace(m, replacement)
-
-            except Exception:
-                pass
+        content = self._replace_placeholders(content)
 
         return content
     
+    def render_raw(self) -> str:
+        content : str = self.get_field("content")
+        content = self._replace_placeholders(content)
+        return content
 
     def _define_title(self, md_file : Path, content_path : Path) -> str:
         if md_file.stem != "index":
@@ -147,3 +122,41 @@ class Page():
         self.__fields["content"] = raw_html
         
         return meta, raw_html
+
+    
+    def _replace_placeholders(self, _content : str) -> str:
+        content = _content
+        # find all placeholders
+        matches_with_braces = re.findall(r"(\{\{.*?\}\})", content)
+        matches = re.findall(r"\{\{(.*?)\}\}", content)
+
+        for i, m in enumerate(matches_with_braces):
+            token = matches[i].strip()
+            if not token.startswith("page."):
+                continue
+
+            expr = token[len("page."):]
+
+            try:
+                node = ast.parse(expr, mode="eval").body
+
+                # method call: page.method(args)
+                if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+                    method_name = node.func.id
+                    args = [ast.literal_eval(a) for a in node.args]
+                    method = getattr(self, f"page_{method_name}", None)
+                    if callable(method):
+                        replacement = str(method(*args))
+                        content = content.replace(m, replacement)
+
+                # property access: page.field
+                elif isinstance(node, ast.Name):
+                    field_name = node.id
+                    if self.has_field(field_name):
+                        replacement = str(self.get_field(field_name))
+                        content = content.replace(m, replacement)
+
+            except Exception:
+                pass
+
+        return content

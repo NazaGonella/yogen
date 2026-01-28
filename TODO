@@ -18,3 +18,4 @@
 - config: make absolute paths work
 - title: explain to the user how default title work
 - invalid date warning
+- markdown files named anything other than index.md should be renamed to index.md and place in a folder named the same as before

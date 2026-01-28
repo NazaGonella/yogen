@@ -8,7 +8,7 @@ build = "build/"
 title = "Your Site Title"               # the default title for pages
 description = "Your site description"   # the default description for pages
 base_url = "https://example.com"
-languages = ["en"]
+languages = ["en"]                      # RSS feeds uses the first language in this list, defaults to english
 
 [[site.authors]]
 name = "author 1 name"
