@@ -1,36 +1,38 @@
 TODO
-- add current port to site variables
-- define site variables
-- catch invalid formats in front matter
-- don't let users execute certain commands if the required fields are not filled (e.g. page_repo and remote in deploy)
-- let users change the tab title
-- page.url
-- always rebuild all bug
-- enforce tags to be a list (or not)
-- readme markdown style
-- make all front matter fields optional
-- tests
-- handle more than one .md file in the same directory
-- handle git errors
-- Update page meta on watch
-- config: make absolute paths work
-- title: explain to the user how default title work
-- invalid date warning
-- yogen create <title>, use <title> for something (default page title)
-- what if I do declarative, and I urge users to choose a template for the list, like {{ collection template=programming-posts-list }} ?
-- argsparse add feedback to the user (help argument)
-- test changing /content and /build folders names in yogen.toml
-- test live rebuild on config file and static and templates folders.
-- make all paths relative to the content root (style.css is the same as /style.css)
-- check edge conditions for yogen deploy
-- code syntax highlighting (pygments?)
-- use pydantic for config validation
-- switch to yaml?
-- run yogen everywhere down the CWD
-- cache config loading
+- urgency scale: 1-5 (5 = highest)
+- [5] fail build when a .md output collides with an existing raw .html file
+- [5] always rebuild all bug
+- [4] tests
+- [4] handle git errors
+- [4] catch invalid formats in front matter
+- [4] add draft support
+- [4] Update page meta on watch
+- [3] test live rebuild on config file and static and templates folders.
+- [3] make all paths relative to the content root (style.css is the same as /style.css)
+- [3] invalid date warning
+- [3] enforce tags to be a list (or not)
+- [3] don't let users execute certain commands if the required fields are not filled (e.g. page_repo and remote in deploy)
+- [3] config: make absolute paths work
+- [3] check edge conditions for yogen deploy
+- [2] title: explain to the user how default title work
+- [2] test changing /content and /build folders names in yogen.toml
+- [2] run yogen everywhere down the CWD
+- [2] readme markdown style
+- [2] make all front matter fields optional
+- [2] define site variables
+- [2] code syntax highlighting (pygments?)
+- [2] cache config loading
+- [2] argsparse add feedback to the user (help argument)
+- [2] add current port to site variables
+- [1] yogen create <title>, use <title> for something (default page title)
+- [1] switch to yaml?
+- [1] let users change the tab title
 
 
 DONE
+- [4] handle more than one .md file in the same directory
+- [1] use pydantic for config validation
+- page.url
 - rename "tag" and "section" metadata to "tags" and "sections"
 - tags arent detected by jinja
 - Validate front matter fields
@@ -42,6 +44,7 @@ DONE
 - Custom date formats
 
 DISCARDED
+- [1] what if I do declarative, and I urge users to choose a template for the list, like {{ collection template=programming-posts-list }} ?
 - Template front matter fields
 - For loops
 - chronological content
