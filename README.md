@@ -21,3 +21,8 @@ You can install yogen via [PyPy](), or by downloading the [executable]().
 - `yogen build`: Compiles your site, generating the output in the `build` folder.
 - `yogen serve [--no-live] [port]`: Serves the site locally on the given port (default: 8000). Add the --no-live option if you don't want live rebuilding of your site.
 - `yogen deploy`: Push the results of the `build` into a remote repository. 
+
+## Content to URL mapping
+
+- `index.md` maps to the parent route (`/blog/index.md` -> `/blog/`).
+- Any other markdown file maps to an html file with the same name (`/blog/post.md` -> `/blog/post.html`).

@@ -28,9 +28,19 @@ class Page():
 
         fm = FrontMatter.model_validate(meta)
 
-        # url for the /posts/index.md file would be /posts/
-        rel = md_file.relative_to(content_path).parent.as_posix()
-        url = "/" if rel == "." else f"/{rel}/"
+        rel_file = md_file.relative_to(content_path)
+        rel_parent = rel_file.parent.as_posix()
+
+        # Routing model:
+        # - index.md -> parent URL (e.g. /guides/index.md -> /guides/)
+        # - name.md  -> name.html (e.g. /guides/quickstart.md -> /guides/quickstart.html)
+        if md_file.stem == "index":
+            url = "/" if rel_parent == "." else f"/{rel_parent}/"
+        else:
+            if rel_parent == ".":
+                url = f"/{md_file.stem}.html"
+            else:
+                url = f"/{rel_parent}/{md_file.stem}.html"
 
         page = {
             "title" : fm.title or self._define_title(md_file, content_path),

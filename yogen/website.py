@@ -106,8 +106,7 @@ class Site():
 
             # print("\nPAGES\n")
             for page in pages_for_feed:
-                page_path : Path = page.file.relative_to(self.content_path)
-                url : str = f"{base_url.rstrip("/")}/{str(page_path.parent)}/"
+                url : str = f"{base_url.rstrip('/')}{page.get_meta('url')}"
                 entry = fg.add_entry()
                 entry.id(url)
                 entry.link(href=url)
@@ -121,10 +120,16 @@ class Site():
             fg.rss_file(str(output_path))
 
     def convert_page(self, file : Path, page : Page):
-        target: Path = self.build_path / file.relative_to(self.content_path)
-        target.parent.mkdir(parents=True, exist_ok=True)
+        rel_file: Path = file.relative_to(self.content_path)
+        target_parent: Path = self.build_path / rel_file.parent
+        target_parent.mkdir(parents=True, exist_ok=True)
 
-        output_path: Path = target.parent / "index.html"
+        # index.md -> <dir>/index.html
+        # name.md  -> <dir>/name.html
+        if file.stem == "index":
+            output_path: Path = target_parent / "index.html"
+        else:
+            output_path = target_parent / f"{file.stem}.html"
         output_path.write_text(
             page.render(self.build_path),
             encoding="utf-8",
