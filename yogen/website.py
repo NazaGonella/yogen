@@ -119,17 +119,24 @@ class Site():
 
             fg.rss_file(str(output_path))
 
-    def convert_page(self, file : Path, page : Page):
+    def _output_relative_path(self, file: Path) -> Path:
         rel_file: Path = file.relative_to(self.content_path)
-        target_parent: Path = self.build_path / rel_file.parent
-        target_parent.mkdir(parents=True, exist_ok=True)
-
-        # index.md -> <dir>/index.html
-        # name.md  -> <dir>/name.html
         if file.stem == "index":
-            output_path: Path = target_parent / "index.html"
-        else:
-            output_path = target_parent / f"{file.stem}.html"
+            return rel_file.parent / "index.html"
+        return rel_file.parent / f"{file.stem}.html"
+
+    def _collect_markdown_outputs(self) -> dict[Path, Path]:
+        outputs: dict[Path, Path] = {}
+        for item in self.content_path.rglob("*.md"):
+            output_rel: Path = self._output_relative_path(item)
+            outputs[output_rel] = item
+        return outputs
+
+    def convert_page(self, file : Path, page : Page):
+        output_rel: Path = self._output_relative_path(file)
+        output_path: Path = self.build_path / output_rel
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
         output_path.write_text(
             page.render(self.build_path),
             encoding="utf-8",
@@ -141,16 +148,29 @@ class Site():
             self.convert_page(file, page)
 
 
-    def copy_other_files(self):
+    def copy_static_files(self):
+        shutil.copytree(self.static_path, self.build_path)
+
+    def copy_raw_content_files(self, markdown_outputs: dict[Path, Path]):
         for item in self.content_path.rglob("*"):
             if item.is_file() and item.suffix != ".md":
-                target = self.build_path / item.relative_to(self.content_path)
+                target_rel = item.relative_to(self.content_path)
+                target = self.build_path / target_rel
                 target.parent.mkdir(parents=True, exist_ok=True)
 
+                # Case 1: raw content file path collides with a markdown-generated output path.
+                md_source = markdown_outputs.get(target_rel)
+                if md_source is not None:
+                    raise RuntimeError(
+                        f"Output path collision: raw file {item} conflicts with markdown output "
+                        f"from {md_source} at {target}"
+                    )
+
+                # Case 2: destination already exists (typically from static/ copy).
                 if target.exists():
                     raise RuntimeError(
-                        f"Output path collision: {target} "
-                        f"(raw file conflicts with markdown-generated page)"
+                        f"Output path collision: destination already exists at {target} "
+                        f"(likely from static/) while copying raw file {item}"
                     )
 
                 shutil.copy2(item, target)
@@ -169,9 +189,10 @@ class Site():
         if self.build_path.exists() and self.build_path.is_dir():
             shutil.rmtree(self.build_path)
 
-        shutil.copytree(self.static_path, self.build_path)
+        self.copy_static_files()
 
-        self.copy_other_files()
+        markdown_outputs = self._collect_markdown_outputs()
+        self.copy_raw_content_files(markdown_outputs)
         self.load_pages()
         self.convert_pages()
         self.convert_feed()

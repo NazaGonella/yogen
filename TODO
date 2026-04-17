@@ -1,6 +1,6 @@
 TODO
 - urgency scale: 1-5 (5 = highest)
-- [5] fail build when a .md output collides with an existing raw .html file
+- [3] style error messages for users (expected errors shouldn't show traceback/code snippets)
 - [5] always rebuild all bug
 - [4] tests
 - [4] handle git errors
@@ -30,6 +30,7 @@ TODO
 
 
 DONE
+- [5] fail build when a .md output collides with an existing raw .html file
 - [4] handle more than one .md file in the same directory
 - [1] use pydantic for config validation
 - page.url
