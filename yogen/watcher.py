@@ -5,12 +5,13 @@ from watchdog.events import FileSystemEvent, FileSystemEventHandler
 class WatchDogHandler(FileSystemEventHandler):
     def __init__(self, content_root : Path, delay : float = 0.3):
         super().__init__()
-        self.content_root = content_root
+        self.content_root = content_root.resolve()
+        self.site_root = self.content_root.parent
         self.delay = delay
         self._timer : threading.Timer | None = None
 
         self.rebuild_all : bool = False
-        self.rebuild_md : set[str] = set()
+        self.rebuild_md : set[Path] = set()
 
         # signals
         self.on_rebuild_all : callable[[], None] | None = None
@@ -25,9 +26,13 @@ class WatchDogHandler(FileSystemEventHandler):
         self._timer.start()
     
     def _classify(self, p : Path):
-        p = p.resolve()
-        if p.is_relative_to(self.content_root) and p.suffix == ".md":
-            self.rebuild_md.add(p)
+        p_resolved = p.resolve()
+        # Partial rebuild is only for markdown files inside content/.
+        # Any other change (non-.md files or directory events) triggers full rebuild.
+        if p_resolved.is_relative_to(self.content_root) and p_resolved.suffix == ".md":
+            # Keep markdown paths site-relative (e.g. content/home.md) so Site.rebuild_md
+            # uses the same key style as normal page loading.
+            self.rebuild_md.add(p_resolved.relative_to(self.site_root))
         else:
             self.rebuild_all = True
 
@@ -38,40 +43,60 @@ class WatchDogHandler(FileSystemEventHandler):
         file_path : Path = Path(event.src_path)
         print("Modified file:", file_path)
         try:
-            # if file_path.suffix != ".md":
-            #     self.rebuild_all = True
-            # else:
-            #     self.rebuild_md.add(file_path)
             self._classify(file_path)
             self._arm_timer()
         except FileNotFoundError:
             return
     
     def on_created(self, event : FileSystemEvent) -> None:
+        if event.is_directory:
+            dir_path = Path(event.src_path)
+            print("Created directory:", dir_path)
+            self.rebuild_all = True
+            self._arm_timer()
+            return
+
         file_path : Path = Path(event.src_path)
         print("Created file:", file_path)
         try:
-            self.rebuild_all = True
+            self._classify(file_path)
             self._arm_timer()
         except FileNotFoundError:
             return
     
-    # TODO: not rebuild when creating or deleting markdown file
-    
     def on_deleted(self, event : FileSystemEvent) -> None:
+        if event.is_directory:
+            dir_path = Path(event.src_path)
+            print("Deleted directory:", dir_path)
+            self.rebuild_all = True
+            self._arm_timer()
+            return
+
         file_path : Path = Path(event.src_path)
         print("Deleted file:", file_path)
         try:
-            self.rebuild_all = True
+            # paths of deleted files are still added to the rebuild_md set.
+            # website.py then checks if the file exists, if not (like in this case), it handles removal.
+            self._classify(file_path)
             self._arm_timer()
         except FileNotFoundError:
             return
     
     def on_moved(self, event : FileSystemEvent) -> None:
-        file_path : Path = Path(event.src_path)
-        print("Moved file:", file_path)
-        try:
+        if event.is_directory:
+            src_path : Path = Path(event.src_path)
+            dst_path : Path = Path(event.dest_path)
+            print("Moved directory:", src_path, "->", dst_path)
             self.rebuild_all = True
+            self._arm_timer()
+            return
+
+        src_path : Path = Path(event.src_path)
+        dst_path : Path = Path(event.dest_path)
+        print("Moved file:", src_path, "->", dst_path)
+        try:
+            self._classify(src_path)
+            self._classify(dst_path)
             self._arm_timer()
         except FileNotFoundError:
             return

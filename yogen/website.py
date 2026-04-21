@@ -147,6 +147,15 @@ class Site():
         for file, page in self.pages.items():
             self.convert_page(file, page)
 
+    def _remove_page_from_indexes(self, page: Page):
+        old_section: str = self.page_sections.pop(page, None)
+        if old_section is not None:
+            self.sections[old_section].discard(page)
+
+        old_tags: set[str] = self.page_tags.pop(page, set())
+        for tag in old_tags:
+            self.tags[tag].discard(page)
+
 
     def copy_static_files(self):
         shutil.copytree(self.static_path, self.build_path)
@@ -178,11 +187,23 @@ class Site():
 
     def rebuild_md(self, md_files: set[Path]):
         for file in md_files:
-            page : Page = Page(file, self.config_file, self.content_path, self.sections, self.tags)
-            self.pages[file] = page
+            if file.exists():
+                page : Page = Page(file, self.config_file, self.content_path, self.sections, self.tags)
+                self.pages[file] = page
 
-            self.index_page(page)
-            self.convert_page(file, page)
+                self.index_page(page)
+                self.convert_page(file, page)
+                continue
+
+            old_page : Page | None = self.pages.pop(file, None)
+            if old_page is not None:
+                # case 1: remove deleted/moved page from in-memory section/tag indexes.
+                self._remove_page_from_indexes(old_page)
+
+            # case 2: remove stale generated output left by deleted/moved source markdown.
+            output_path : Path = self.build_path / self._output_relative_path(file)
+            if output_path.exists():
+                output_path.unlink()
 
 
     def build(self):
