@@ -1,7 +1,8 @@
 TODO
+- jinja2 whitespace trimming
 - urgency scale: 1-5 (5 = highest)
-- [5] fail build when markdown output collides with files copied from static/
 - [4] tests
+- [4] write tests for markdown/static collision checks (full build + partial rebuild paths)
 - [4] write tests for collision handling in yogen build and yogen serve (raw html vs markdown output, static vs markdown output)
 - [4] write tests for watcher rebuild behavior (.md file events -> partial rebuild, non-.md and directory create/delete/move events -> full rebuild)
 - [4] make website.py rebuild path handling root-agnostic
@@ -15,15 +16,22 @@ TODO
 - [4] catch invalid formats in front matter
 - [4] add draft support
 - [4] Update page meta on watch
-- [2] clean up empty section/tag buckets after page removals in website.py indexes
 - [3] style error messages for users (expected errors shouldn't show traceback/code snippets)
 - [3] test live rebuild on config file and static and templates folders.
 - [3] make all paths relative to the content root (style.css is the same as /style.css)
+- [3] exclude-tags parameter
+- [3] exclude-section parameter
 - [3] invalid date warning
 - [3] enforce tags to be a list (or not)
 - [3] don't let users execute certain commands if the required fields are not filled (e.g. page_repo and remote in deploy)
 - [3] config: make absolute paths work
 - [3] check edge conditions for yogen deploy
+- [3] document yogen deploy as an opinionated convenience command (git subtree push)
+- [3] improve yogen deploy pre-checks and errors (not a git repo, missing remote/branch, git failures)
+- [2] no-live argument implementation
+- [2] clean up empty section/tag buckets after page removals in website.py indexes
+- [2] clarify deploy config naming (rename page_repo to branch or similar)
+- [2] flexibilize deploy configuration and strategy (support non-subtree workflows, including custom deploy commands)
 - [2] title: explain to the user how default title work
 - [2] test changing /content and /build folders names in yogen.toml
 - [2] run yogen everywhere down the CWD
@@ -40,6 +48,8 @@ TODO
 - [1] let users change the tab title
 
 ISSUES
+
+PAST ISSUES
 - [5] markdown output vs static file collision is not detected
   - problem: if a markdown file compiles to a path already copied from static/, build succeeds and markdown silently overwrites static output.
   - repro examples:
@@ -50,8 +60,8 @@ ISSUES
   - actual: build succeeds; resulting file is markdown output.
   - notes: direct raw collision static/post.html + content/post.html already raises (target exists check). gap is specifically markdown output overwriting files previously copied from static/.
 
-
 DONE
+- [5] fail build when markdown output collides with files copied from static/
 - [5] always rebuild all bug
 - [5] fail build when a .md output collides with an existing raw .html file
 - [4] handle more than one .md file in the same directory

@@ -132,9 +132,40 @@ class Site():
             outputs[output_rel] = item
         return outputs
 
+    def _collect_static_outputs(self) -> dict[Path, Path]:
+        outputs: dict[Path, Path] = {}
+        for item in self.static_path.rglob("*"):
+            if item.is_file():
+                outputs[item.relative_to(self.static_path)] = item
+        return outputs
+
+    def _validate_markdown_static_collisions(
+        self,
+        markdown_outputs: dict[Path, Path],
+        static_outputs: dict[Path, Path],
+    ):
+        for output_rel, md_source in markdown_outputs.items():
+            static_source = static_outputs.get(output_rel)
+            if static_source is not None:
+                target = self.build_path / output_rel
+                raise RuntimeError(
+                    f"Output path collision: markdown source {md_source} conflicts with static file "
+                    f"{static_source} at {target}"
+                )
+
     def convert_page(self, file : Path, page : Page):
         output_rel: Path = self._output_relative_path(file)
         output_path: Path = self.build_path / output_rel
+
+        # live rebuild writes one page directly (no build() pre-check).
+        # It stops markdown output from overwriting a file copied from static/.
+        static_source = self.static_path / output_rel
+        if static_source.exists():
+            raise RuntimeError(
+                f"Output path collision: markdown source {file} conflicts with static file "
+                f"{static_source} at {output_path}"
+            )
+
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
         output_path.write_text(
@@ -210,9 +241,11 @@ class Site():
         if self.build_path.exists() and self.build_path.is_dir():
             shutil.rmtree(self.build_path)
 
-        self.copy_static_files()
-
         markdown_outputs = self._collect_markdown_outputs()
+        static_outputs = self._collect_static_outputs()
+        self._validate_markdown_static_collisions(markdown_outputs, static_outputs)
+
+        self.copy_static_files()
         self.copy_raw_content_files(markdown_outputs)
         self.load_pages()
         self.convert_pages()
