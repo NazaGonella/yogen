@@ -50,12 +50,6 @@ TODO
 - [1] let users change the tab title
 
 ISSUES
-- [4] partial rebuild does not propagate front matter changes to dependent pages/feed
-  - problem: when a markdown file changes, rebuild_md() only re-renders that page.
-  - impact: pages that render collections (sections/tags) and RSS feed can become stale after front matter edits (title/date/section/tags/url).
-  - expected: markdown edits should also refresh dependent collection pages and feed (or trigger full rebuild when needed).
-  - actual: dependent outputs stay outdated until the next full build.
-  - proposed fix: in watcher flow, compare old vs new front matter for changed .md files; if metadata changed (or file create/delete/move), run full build; otherwise keep partial rebuild.
 
 PAST ISSUES
 - [5] markdown output vs static file collision is not detected
@@ -67,6 +61,12 @@ PAST ISSUES
   - expected: fail build with explicit collision error (same policy as content raw html vs markdown collisions).
   - actual: build succeeds; resulting file is markdown output.
   - notes: direct raw collision static/post.html + content/post.html already raises (target exists check). gap is specifically markdown output overwriting files previously copied from static/.
+- [4] partial rebuild does not propagate front matter changes to dependent pages/feed
+  - problem: when a markdown file changes, rebuild_md() only re-renders that page.
+  - impact: pages that render collections (sections/tags) and RSS feed can become stale after front matter edits (title/date/section/tags/url).
+  - expected: markdown edits should also refresh dependent collection pages and feed (or trigger full rebuild when needed).
+  - actual: dependent outputs stay outdated until the next full build.
+  - proposed fix: in watcher flow, compare old vs new front matter for changed .md files; if metadata changed (or file create/delete/move), run full build; otherwise keep partial rebuild.
 
 DONE
 - [5] fail build when markdown output collides with files copied from static/
