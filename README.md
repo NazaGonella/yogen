@@ -26,3 +26,11 @@ You can install yogen via [PyPy](), or by downloading the [executable]().
 
 - `index.md` maps to the parent route (`/blog/index.md` -> `/blog/`).
 - Any other markdown file maps to an html file with the same name (`/blog/post.md` -> `/blog/post.html`).
+
+## Yogen Markdown
+
+## Yogen Collections
+
+### Sections
+
+### Tags
