@@ -79,6 +79,13 @@ class Page():
     def has_meta(self, key : str) -> bool:
         return key in self.__metadata["page"]
 
+    def meta_snapshot(self) -> dict:
+        return {
+            key: value
+            for key, value in self.__metadata["page"].items()
+            if key != "content"
+        }
+
     def render(self, build_path: Path) -> str:
         content_template : Template = Template(self.raw_html)
         rendered_content = content_template.render(**self.__metadata)

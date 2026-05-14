@@ -1,5 +1,4 @@
 TODO
-- jinja2 whitespace trimming
 - urgency scale: 1-5 (5 = highest)
 - [4] tests
 - [4] write tests for markdown/static collision checks (full build + partial rebuild paths)
@@ -28,6 +27,9 @@ TODO
 - [3] check edge conditions for yogen deploy
 - [3] document yogen deploy as an opinionated convenience command (git subtree push)
 - [3] improve yogen deploy pre-checks and errors (not a git repo, missing remote/branch, git failures)
+- [3] centralize rebuild logging/messages (single source for partial vs full rebuild reason)
+- [3] decouple Page from site-global render context (inject sections/tags at render-time instead of storing in Page)
+- [2] jinja2 whitespace trimming
 - [2] no-live argument implementation
 - [2] clean up empty section/tag buckets after page removals in website.py indexes
 - [2] clarify deploy config naming (rename page_repo to branch or similar)

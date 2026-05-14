@@ -34,3 +34,9 @@ You can install yogen via [PyPy](), or by downloading the [executable]().
 ### Sections
 
 ### Tags
+
+## Build flow
+
+- .md file modification --> partial rebuild
+- .md file front matter modification --> full rebuild
+- other file modification --> full rebuild

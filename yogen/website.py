@@ -217,24 +217,36 @@ class Site():
     
 
     def rebuild_md(self, md_files: set[Path]):
+        pending_updates: list[tuple[Path, Page]] = []
+
         for file in md_files:
-            if file.exists():
-                page : Page = Page(file, self.config_file, self.content_path, self.sections, self.tags)
-                self.pages[file] = page
+            old_page : Page | None = self.pages.get(file)
 
-                self.index_page(page)
-                self.convert_page(file, page)
-                continue
+            # Create/delete/move means collection indexes and feed membership can change.
+            # Fall back to full rebuild to keep all generated pages and feed in sync.
+            if old_page is None or not file.exists():
+                print(f"REBUILDING ALL... (markdown structure change detected: {file})")
+                self.build()
+                return
 
-            old_page : Page | None = self.pages.pop(file, None)
-            if old_page is not None:
-                # case 1: remove deleted/moved page from in-memory section/tag indexes.
-                self._remove_page_from_indexes(old_page)
+            new_page : Page = Page(file, self.config_file, self.content_path, self.sections, self.tags)
 
-            # case 2: remove stale generated output left by deleted/moved source markdown.
-            output_path : Path = self.build_path / self._output_relative_path(file)
-            if output_path.exists():
-                output_path.unlink()
+            # front matter metadata changed
+            if old_page.meta_snapshot() != new_page.meta_snapshot():
+                print(f"REBUILDING ALL... (front matter metadata changed: {file})")
+                self.build()
+                return
+
+            pending_updates.append((file, new_page))
+
+        # apply partial updates: replace page objects, refresh indexes, and re-render outputs
+        for file, page in pending_updates:
+            self.pages[file] = page
+            self.index_page(page)
+            self.convert_page(file, page)
+
+        if pending_updates:
+            self.convert_feed()
 
 
     def build(self):
