@@ -12,6 +12,13 @@ TODO
     - should accept: /abs/path/to/site/content/home.md
     - should avoid: relative_to mismatches between absolute and relative paths
 - [4] handle git errors
+- [3] stop reserving the "content", "raw" and "url" front matter field names
+  - problem: these names are protected and raise if set in front matter, because they collide with internal render context keys.
+  - goal: let users freely use any front matter field name, including these.
+  - ideas:
+    - namespace internal/computed values separately from user front matter (e.g. expose user fields and computed fields under distinct keys).
+    - or rename the internal keys and keep a thin compatibility layer in templates.
+  - after solving: remove the reserved field names note from the README ("Writing content" section).
 - [4] catch invalid formats in front matter
 - [4] add draft support
 - [4] Update page meta on watch
