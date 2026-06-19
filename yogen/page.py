@@ -1,3 +1,4 @@
+import sys
 import tomllib
 import markdown
 from jinja2 import Template, Environment, FileSystemLoader, select_autoescape
@@ -6,6 +7,24 @@ from yogen.config import load_config
 from pathlib import Path
 from datetime import date, datetime
 from yogen.front_matter import FrontMatter
+
+# Computed/derived values that are always exposed at the top level of the render
+# context (content, url, raw) and mirrored onto `page` so page.content == content
+# unless the user defines a front matter field of the same name.
+COMPUTED_FIELDS = ("content", "url", "raw")
+
+
+class _PageMeta(dict):
+    def bind(self, computed: dict) -> "_PageMeta":
+        self._computed = computed
+        return self
+
+    def __missing__(self, key):
+        computed = getattr(self, "_computed", None)
+        if computed is not None and key in COMPUTED_FIELDS:
+            return computed[key]
+        raise KeyError(key)
+
 
 class Page():
     def __init__(self, md_file : Path, config_file : Path, content_path : Path, meta_sections : dict[str, set[Page]], meta_tags : dict[str, set[Page]]):
@@ -40,15 +59,29 @@ class Page():
             else:
                 url = f"/{rel_parent}/{md_file.stem}.html"
 
-        page = {
+        # `page` holds the document's front matter (recognized fields + user
+        # extras). Missing computed names fall back to the computed values, so
+        # page.content == content unless the user overrides it (see _PageMeta).
+        page = _PageMeta({
             "title" : fm.title or self._define_title(md_file, content_path),
             "authors" : fm.authors,
             "date" : fm.date,
             "template" : fm.template,
             "section" : fm.section,
             "tags" : fm.tags,
-        }
+        })
         page.update(fm.model_extra)
+        page.bind(self.__metadata)
+
+        # warn when a user field overrides a built-in computed value
+        for name in COMPUTED_FIELDS:
+            if name in fm.model_extra:
+                print(
+                    f"WARNING: {md_file}: front matter field '{name}' overrides the "
+                    f"built-in page.{name}; the computed value is still available as "
+                    f"the top-level '{name}' in templates.",
+                    file=sys.stderr,
+                )
 
         self.__metadata["page"] = page
         self.__metadata["url"] = url
@@ -71,12 +104,11 @@ class Page():
         except AttributeError:
             raise AttributeError(name)
 
-        # computed/derived values are stored at the top level and take
-        # precedence, so collection access like p.url returns the route.
-        if name in ("content", "url", "raw"):
+        page = metadata["page"]
+        if name in page:
+            return page[name]
+        if name in COMPUTED_FIELDS:
             return metadata[name]
-        if name in metadata["page"]:
-            return metadata["page"][name]
         raise AttributeError(name)
     
     def get_meta(self, key : str) -> object | None:

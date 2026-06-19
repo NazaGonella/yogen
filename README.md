@@ -173,6 +173,10 @@ receive the following context:
 - `sections` — a mapping of section name → set of pages
 - `tags` — a mapping of tag name → set of pages
 
+The computed values are also mirrored onto `page`, so `page.content`, `page.url`,
+and `page.raw` give the same results as `content`, `url`, and `raw`. Use whichever
+reads better.
+
 ```html
 <article>
   <h2>{{ page.title }}</h2>
@@ -201,16 +205,15 @@ pages that list other pages. For example, an `index.md` that lists every post in
 {% endfor %}
 ```
 
-Here each `p` is another page, and `p.<field>` resolves like this: the computed
-values `content`, `url`, and `raw` take precedence (so `p.url` is always the page's
-route), and anything else comes from that page's front matter (`p.title`, `p.date`,
-or any custom field).
+Here each `p` is another page. `p.<field>` resolves to that page's front matter
+field if present, otherwise to its computed value — so `p.title` is the title and
+`p.url` is the route, the same way `page.<field>` works on the current page.
 
-> **Edge case:** because the computed values win, a *custom* front matter field
-> named `content`, `url`, or `raw` is shadowed when accessed as `p.content` / `p.url`
-> / `p.raw` on another page — you'd get the computed value instead of your field.
-> On the page's own template the field is still reachable as `page.content` etc.
-> Avoid naming custom fields `content`, `url`, or `raw` to sidestep this.
+> **Overriding computed values:** defining a front matter field named `content`,
+> `url`, or `raw` overrides the mirrored value, so `page.content` (and `p.content`)
+> then return your value instead of the computed one. The build prints a warning
+> when this happens, and the computed value is always still available as the
+> top-level `content` / `url` / `raw`.
 
 ## RSS feed
 
