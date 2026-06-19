@@ -15,16 +15,14 @@ class Page():
 
         self.__metadata = {
             "page": {},
+            "content": Markup(""),
+            "raw": "",
+            "url": "",
             "sections": meta_sections,
             "tags": meta_tags,
         }
 
         meta, self.raw_html = self._md_to_html()
-
-        protected = {"content", "raw", "url"}
-        bad = protected & meta.keys()
-        if bad:
-            raise ValueError(f"metadata field(s) {bad} are protected")
 
         fm = FrontMatter.model_validate(meta)
 
@@ -49,13 +47,12 @@ class Page():
             "template" : fm.template,
             "section" : fm.section,
             "tags" : fm.tags,
-            "url" : url,
         }
-
-        # merge extra user fields
         page.update(fm.model_extra)
 
         self.__metadata["page"] = page
+        self.__metadata["url"] = url
+        self.__metadata["raw"] = self.raw_html
 
     
     def __hash__(self):
@@ -67,8 +64,19 @@ class Page():
         return self.file == other.file
     
     def __getattr__(self, name):
-        if name in self.__metadata["page"]:
-            return self.__metadata["page"][name]
+        # __getattr__ runs only when normal attribute lookup fails; use the raw
+        # lookup to avoid recursing back here before __metadata is set.
+        try:
+            metadata = object.__getattribute__(self, "_Page__metadata")
+        except AttributeError:
+            raise AttributeError(name)
+
+        # computed/derived values are stored at the top level and take
+        # precedence, so collection access like p.url returns the route.
+        if name in ("content", "url", "raw"):
+            return metadata[name]
+        if name in metadata["page"]:
+            return metadata["page"][name]
         raise AttributeError(name)
     
     def get_meta(self, key : str) -> object | None:
@@ -80,17 +88,15 @@ class Page():
         return key in self.__metadata["page"]
 
     def meta_snapshot(self) -> dict:
-        return {
-            key: value
-            for key, value in self.__metadata["page"].items()
-            if key != "content"
-        }
+        # only front matter is tracked here; computed values (content, url, raw)
+        # live outside the page dict and are derived deterministically.
+        return dict(self.__metadata["page"])
 
     def render(self, build_path: Path) -> str:
         content_template : Template = Template(self.raw_html)
         rendered_content = content_template.render(**self.__metadata)
 
-        self.__metadata["page"]["content"] = Markup(rendered_content)
+        self.__metadata["content"] = Markup(rendered_content)
 
         template_path : str = self.get_meta("template")
         if not template_path:
@@ -105,9 +111,7 @@ class Page():
         return template.render(**self.__metadata)
     
     def render_raw(self) -> str:
-        content : str = self.get_meta("content")
-        # content = self._replace_placeholders(content)
-        return content
+        return self.__metadata["content"]
 
     def _define_title(self, md_file : Path, content_path : Path) -> str:
         if md_file.stem != "index":
@@ -157,7 +161,7 @@ class Page():
         
         raw_html : str = md.convert(raw)
 
-        # self.__metadata["content"] = raw_html
-        self.__metadata["page"]["content"] = Markup(raw_html)
-        
+        # provisional rendered body; render() overwrites it with the Jinja-rendered version
+        self.__metadata["content"] = Markup(raw_html)
+
         return meta, raw_html

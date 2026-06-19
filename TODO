@@ -12,13 +12,11 @@ TODO
     - should accept: /abs/path/to/site/content/home.md
     - should avoid: relative_to mismatches between absolute and relative paths
 - [4] handle git errors
-- [3] stop reserving the "content", "raw" and "url" front matter field names
-  - problem: these names are protected and raise if set in front matter, because they collide with internal render context keys.
-  - goal: let users freely use any front matter field name, including these.
-  - ideas:
-    - namespace internal/computed values separately from user front matter (e.g. expose user fields and computed fields under distinct keys).
-    - or rename the internal keys and keep a thin compatibility layer in templates.
-  - after solving: remove the reserved field names note from the README ("Writing content" section).
+- [2] decide what to do about custom fields shadowed by computed values on collection pages (might discard)
+  - context: page.* holds front matter; content/url/raw are computed top-level values. Page.__getattr__ resolves content/url/raw first, so on a collection page p.content/p.url/p.raw return the computed value, shadowing any custom front matter field of the same name.
+  - on the page's own template the custom field is still reachable as page.content etc.; only attribute access on other pages (p.<field>) is affected.
+  - options: leave as-is (documented in README), expose collection-page front matter under a sub-namespace (e.g. p.page.<field>), or warn when a custom field name collides.
+  - might discard: naming a custom field content/url/raw is unusual, so this may not be worth solving.
 - [4] catch invalid formats in front matter
 - [4] add draft support
 - [4] Update page meta on watch
@@ -59,6 +57,13 @@ TODO
 ISSUES
 
 PAST ISSUES
+- [3] stop reserving the "content", "raw" and "url" front matter field names
+  - problem: these names are protected and raise if set in front matter, because they collide with internal render context keys.
+  - goal: let users freely use any front matter field name, including these.
+  - ideas:
+    - namespace internal/computed values separately from user front matter (e.g. expose user fields and computed fields under distinct keys).
+    - or rename the internal keys and keep a thin compatibility layer in templates.
+  - after solving: remove the reserved field names note from the README ("Writing content" section).
 - [5] markdown output vs static file collision is not detected
   - problem: if a markdown file compiles to a path already copied from static/, build succeeds and markdown silently overwrites static output.
   - repro examples:
@@ -76,6 +81,7 @@ PAST ISSUES
   - proposed fix: in watcher flow, compare old vs new front matter for changed .md files; if metadata changed (or file create/delete/move), run full build; otherwise keep partial rebuild.
 
 DONE
+- [3] stop reserving the "content", "raw" and "url" front matter field names
 - [5] fail build when markdown output collides with files copied from static/
 - [5] always rebuild all bug
 - [5] fail build when a .md output collides with an existing raw .html file

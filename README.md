@@ -145,7 +145,6 @@ Lorem ipsum `dolor` sit amet…
 | `tags` | list of strings (a bare string is accepted too) | `[]` |
 
 Any additional fields you add are passed through and made available to templates.
-The names `content`, `raw`, and `url` are reserved and cannot be set in front matter.
 Front matter is optional — a file with no `+++` block compiles fine.
 
 ### Content-to-URL mapping
@@ -166,8 +165,11 @@ A page is rendered in two stages: the Markdown body is first rendered as a Jinja
 template, then (if `template` is set) wrapped in the named template. Templates
 receive the following context:
 
-- `page` — the current page's metadata (`page.title`, `page.date`, `page.url`,
-  `page.content`, plus any custom front matter fields)
+- `page` — the page's front matter (`page.title`, `page.date`, `page.section`,
+  `page.tags`, plus any custom fields)
+- `content` — the rendered HTML body of the page
+- `url` — the page's route
+- `raw` — the page body before templating
 - `sections` — a mapping of section name → set of pages
 - `tags` — a mapping of tag name → set of pages
 
@@ -175,7 +177,7 @@ receive the following context:
 <article>
   <h2>{{ page.title }}</h2>
   <p><em>{{ page.date.strftime("%B %d, %Y") }}</em></p>
-  {{ page.content }}
+  {{ content }}
 </article>
 ```
 
@@ -198,6 +200,17 @@ pages that list other pages. For example, an `index.md` that lists every post in
 </p>
 {% endfor %}
 ```
+
+Here each `p` is another page, and `p.<field>` resolves like this: the computed
+values `content`, `url`, and `raw` take precedence (so `p.url` is always the page's
+route), and anything else comes from that page's front matter (`p.title`, `p.date`,
+or any custom field).
+
+> **Edge case:** because the computed values win, a *custom* front matter field
+> named `content`, `url`, or `raw` is shadowed when accessed as `p.content` / `p.url`
+> / `p.raw` on another page — you'd get the computed value instead of your field.
+> On the page's own template the field is still reachable as `page.content` etc.
+> Avoid naming custom fields `content`, `url`, or `raw` to sidestep this.
 
 ## RSS feed
 

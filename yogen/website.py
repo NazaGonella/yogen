@@ -106,7 +106,7 @@ class Site():
 
             # print("\nPAGES\n")
             for page in pages_for_feed:
-                url : str = f"{base_url.rstrip('/')}{page.get_meta('url')}"
+                url : str = f"{base_url.rstrip('/')}{page.url}"
                 entry = fg.add_entry()
                 entry.id(url)
                 entry.link(href=url)
