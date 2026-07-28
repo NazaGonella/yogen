@@ -8,6 +8,15 @@ from pathlib import Path
 
 class TestCLI(unittest.TestCase):
 
+    def assertCommandSucceeded(self, result: subprocess.CompletedProcess):
+        """Assert a yogen command exited cleanly, reporting its output if not."""
+        if result.returncode != 0:
+            self.fail(
+                f"command failed with exit code {result.returncode}\n"
+                f"--- stdout ---\n{result.stdout}\n"
+                f"--- stderr ---\n{result.stderr}"
+            )
+
     @classmethod
     def setUpClass(cls):
         return super().setUpClass()
@@ -36,7 +45,7 @@ class TestCLI(unittest.TestCase):
             )
 
             # CLI should exit successfully
-            self.assertEqual(result.returncode, 0)
+            self.assertCommandSucceeded(result)
 
             # the site folder should exist
             site_path = tmp_path / site_name
@@ -67,7 +76,7 @@ class TestCLI(unittest.TestCase):
                 text=True
             )
 
-            self.assertEqual(result.returncode, 0)
+            self.assertCommandSucceeded(result)
 
             site_path = tmp_path / site_name
 
@@ -78,7 +87,7 @@ class TestCLI(unittest.TestCase):
                 text=True
             )
 
-            self.assertEqual(result.returncode, 0)
+            self.assertCommandSucceeded(result)
 
             # The build folder should exist
             build_path = site_path / "build"
@@ -100,12 +109,13 @@ class TestCLI(unittest.TestCase):
             site_name = "newsite"
 
             # Create the site first
-            subprocess.run(
+            result = subprocess.run(
                 ["yogen", "create", site_name],
                 cwd=tmp_path,
                 capture_output=True,
                 text=True
             )
+            self.assertCommandSucceeded(result)
 
             site_path = tmp_path / site_name
 
