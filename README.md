@@ -1,5 +1,9 @@
 # yogen
 
+[![PyPI](https://img.shields.io/pypi/v/yogen)](https://pypi.org/project/yogen/)
+[![Python](https://img.shields.io/pypi/pyversions/yogen)](https://pypi.org/project/yogen/)
+[![License](https://img.shields.io/pypi/l/yogen)](LICENSE)
+
 > ⚠️ Work in progress. The API and configuration format may still change.
 
 **yogen** is a straightforward static site generator written in Python. It turns
@@ -21,7 +25,14 @@ your changes live as you save.
 
 yogen requires **Python 3.10+**.
 
-From source:
+```sh
+pip install yogen
+```
+
+This installs the `yogen` command.
+
+<details>
+<summary>Installing from source</summary>
 
 ```sh
 git clone https://github.com/NazaGonella/yogen.git
@@ -29,13 +40,7 @@ cd yogen
 pip install .
 ```
 
-Or install the prebuilt wheel from `dist/`:
-
-```sh
-pip install dist/yogen-0.5.0-py3-none-any.whl
-```
-
-This installs the `yogen` command.
+</details>
 
 ## Quick start
 
@@ -70,7 +75,8 @@ mysite/
     └── templates/    # Jinja2 templates referenced by pages
 ```
 
-`yogen build` (or `yogen serve`) generates the site into a `build/` folder.
+Run `yogen build` (or `yogen serve`) and you'll get a `build/` folder with the
+generated site.
 
 ### How files map to the build
 
