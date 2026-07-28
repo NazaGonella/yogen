@@ -27,7 +27,7 @@ class _PageMeta(dict):
 
 
 class Page():
-    def __init__(self, md_file : Path, config_file : Path, content_path : Path, meta_sections : dict[str, set[Page]], meta_tags : dict[str, set[Page]]):
+    def __init__(self, md_file : Path, config_file : Path, content_path : Path, meta_sections : dict[str, set["Page"]], meta_tags : dict[str, set["Page"]]):
         self.config : Path = load_config(config_file)
         self.content_path : Path = content_path
         self.file : Path = md_file
