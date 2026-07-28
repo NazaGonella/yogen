@@ -1,6 +1,6 @@
 # yogen
 
-> ⚠️ Work in progress — the API and configuration format may still change.
+> ⚠️ Work in progress. The API and configuration format may still change.
 
 **yogen** is a straightforward static site generator written in Python. It turns
 a folder of Markdown (and plain HTML) files into a complete website, and is built
@@ -10,12 +10,12 @@ your changes live as you save.
 ## Features
 
 - **Markdown-based content** with front matter for per-page metadata
-- **Jinja2 templating** — pages can be rendered through reusable HTML templates
-- **Live reload** — a local server rebuilds the site as you edit
-- **Incremental rebuilds** — only recompiles what changed, so edits show up fast
-- **Collections** — organize pages into *sections* and *tags*
+- **Jinja2 templating**: pages can be rendered through reusable HTML templates
+- **Live reload**: a local server rebuilds the site as you edit
+- **Incremental rebuilds**: only recompiles what changed, so edits show up fast
+- **Collections**: organize pages into *sections* and *tags*
 - **RSS feed generation** from selected sections and tags
-- **Predictable builds** — a clear content-to-output mapping that's robust to authoring mistakes
+- **Predictable builds**: a clear content-to-output mapping that's robust to authoring mistakes
 
 ## Installation
 
@@ -104,7 +104,7 @@ email = "author@example.com"
 remote = "origin"
 page_repo = "gh-pages"
 
-[feed]                                  # optional — omit to disable the RSS feed
+[feed]                                  # optional, omit to disable the RSS feed
 title = "Your Feed Title"
 subtitle = "Your Feed Subtitle"
 icon = "icon.svg"
@@ -145,18 +145,18 @@ Lorem ipsum `dolor` sit amet…
 | `tags` | list of strings (a bare string is accepted too) | `[]` |
 
 Any additional fields you add are passed through and made available to templates.
-Front matter is optional — a file with no `+++` block compiles fine.
+Front matter is optional. A file with no `+++` block compiles fine.
 
 ### Content-to-URL mapping
 
-- `index.md` maps to its parent route — `content/blog/index.md` → `/blog/`
-- any other Markdown file maps to a same-named HTML file — `content/blog/post.md` → `/blog/post.html`
+- `index.md` maps to its parent route: `content/blog/index.md` → `/blog/`
+- any other Markdown file maps to a same-named HTML file: `content/blog/post.md` → `/blog/post.html`
 
 ### Markdown features
 
 yogen enables these Markdown extensions: footnotes, tables, definition lists,
 table of contents, [captions](https://pypi.org/project/markdown-captions/), and
-fenced code blocks. Indentation-based code blocks are disabled — use fenced blocks
+fenced code blocks. Indentation-based code blocks are disabled; use fenced blocks
 (```` ``` ````) instead.
 
 ## Templating
@@ -165,13 +165,13 @@ A page is rendered in two stages: the Markdown body is first rendered as a Jinja
 template, then (if `template` is set) wrapped in the named template. Templates
 receive the following context:
 
-- `page` — the page's front matter (`page.title`, `page.date`, `page.section`,
+- `page`: the page's front matter (`page.title`, `page.date`, `page.section`,
   `page.tags`, plus any custom fields)
-- `content` — the rendered HTML body of the page
-- `url` — the page's route
-- `raw` — the page body before templating
-- `sections` — a mapping of section name → set of pages
-- `tags` — a mapping of tag name → set of pages
+- `content`: the rendered HTML body of the page
+- `url`: the page's route
+- `raw`: the page body before templating
+- `sections`: a mapping of section name → set of pages
+- `tags`: a mapping of tag name → set of pages
 
 The computed values are also mirrored onto `page`, so `page.content`, `page.url`,
 and `page.raw` give the same results as `content`, `url`, and `raw`. Use whichever
@@ -188,8 +188,8 @@ reads better.
 ### Collections
 
 A page belongs to a single **section** but can carry any number of **tags**. Use a
-section for a page's primary grouping — the kind of content it is (`posts`, `notes`,
-`projects`) — and tags for cross-cutting topics that span sections (`python`,
+section for a page's primary grouping (the kind of content it is: `posts`, `notes`,
+`projects`), and use tags for cross-cutting topics that span sections (`python`,
 `tutorial`, `release`). A page defaults to the `"global"` section and no tags.
 
 Because `sections` and `tags` are available in every template, you can build index
@@ -206,7 +206,7 @@ pages that list other pages. For example, an `index.md` that lists every post in
 ```
 
 Here each `p` is another page. `p.<field>` resolves to that page's front matter
-field if present, otherwise to its computed value — so `p.title` is the title and
+field if present, otherwise to its computed value, so `p.title` is the title and
 `p.url` is the route, the same way `page.<field>` works on the current page.
 
 > **Overriding computed values:** defining a front matter field named `content`,
@@ -231,7 +231,7 @@ configured `output` path. A page is included when its section is listed in
 
 `yogen deploy` is a convenience command that publishes the `build/`
 folder using `git subtree push`, targeting the `remote` and `page_repo` (branch)
-configured under `[deploy]` — a common setup for GitHub Pages. You can always
+configured under `[deploy]`, a common setup for GitHub Pages. You can always
 deploy `build/` by your own means instead.
 
 ## License
