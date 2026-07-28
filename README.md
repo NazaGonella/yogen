@@ -1,5 +1,6 @@
 # yogen
 
+[![CI](https://github.com/NazaGonella/yogen/actions/workflows/ci.yml/badge.svg)](https://github.com/NazaGonella/yogen/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/yogen)](https://pypi.org/project/yogen/)
 [![Python](https://img.shields.io/pypi/pyversions/yogen)](https://pypi.org/project/yogen/)
 [![License](https://img.shields.io/pypi/l/yogen)](LICENSE)
@@ -23,7 +24,7 @@ your changes live as you save.
 
 ## Installation
 
-yogen requires **Python 3.10+**.
+yogen requires **Python 3.11+**.
 
 ```sh
 pip install yogen

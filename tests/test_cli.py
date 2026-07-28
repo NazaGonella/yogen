@@ -47,9 +47,8 @@ class TestCLI(unittest.TestCase):
             self.assertTrue((site_path / "yogen.toml").exists())
 
             # default folders exist
-            for folder in ["content", "static", "templates"]:
+            for folder in ["content", "static", "static/templates"]:
                 folder_path = site_path / folder
-                print("Checking folder:", folder_path)
                 self.assertTrue(folder_path.exists())
                 self.assertTrue(folder_path.is_dir())
 
@@ -132,3 +131,5 @@ class TestCLI(unittest.TestCase):
                 # Terminate the server
                 proc.send_signal(signal.SIGINT)
                 proc.wait(timeout=5)
+                proc.stdout.close()
+                proc.stderr.close()

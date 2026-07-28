@@ -8,7 +8,7 @@ version = "0.5.0"
 description = "Static site generator"
 authors = [{name = "Nazareno Gonella", email = "nazagonella2@gmail.com"}]
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
 dependencies = [
@@ -19,6 +19,9 @@ dependencies = [
     "Jinja2>=3.1,<4.0",
     "pydantic>=2,<3"
 ]
+
+[project.optional-dependencies]
+dev = ["requests>=2.31,<3.0"]
 
 [project.scripts]
 yogen = "yogen.__main__:main"
