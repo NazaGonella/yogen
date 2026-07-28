@@ -161,7 +161,7 @@ Front matter is optional. A file with no `+++` block compiles fine.
 ### Markdown features
 
 yogen enables these Markdown extensions: footnotes, tables, definition lists,
-table of contents, [captions](https://pypi.org/project/markdown-captions/), and
+table of contents, captions (an image's alt text becomes its `<figcaption>`), and
 fenced code blocks. Indentation-based code blocks are disabled; use fenced blocks
 (```` ``` ````) instead.
 
@@ -215,23 +215,21 @@ Here each `p` is another page. `p.<field>` resolves to that page's front matter
 field if present, otherwise to its computed value, so `p.title` is the title and
 `p.url` is the route, the same way `page.<field>` works on the current page.
 
-> **Overriding computed values:** defining a front matter field named `content`,
-> `url`, or `raw` overrides the mirrored value, so `page.content` (and `p.content`)
-> then return your value instead of the computed one. The build prints a warning
-> when this happens, and the computed value is always still available as the
-> top-level `content` / `url` / `raw`.
-
 ## RSS feed
 
 If a `[feed]` table is present in `yogen.toml`, yogen generates an RSS feed at the
 configured `output` path. A page is included when its section is listed in
 `feed.sections` or any of its tags is listed in `feed.tags`.
 
-## Build flow
+## When the site rebuilds
 
-- `.md` body change → **partial rebuild** (only the affected page is recompiled)
-- `.md` front matter change → **full rebuild** (metadata can affect collections and the feed)
-- any other change (assets, templates, config, file/dir create/delete/move) → **full rebuild**
+While `yogen serve` is running, saving a file rebuilds the site:
+
+- editing the body of a Markdown page rebuilds just that page
+- editing its front matter rebuilds the whole site, since other pages and the feed
+  may use it
+- changing anything else (HTML pages, templates, assets, `yogen.toml`, adding or
+  removing files) rebuilds the whole site
 
 ## Deploy
 
